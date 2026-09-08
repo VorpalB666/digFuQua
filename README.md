@@ -1,0 +1,2 @@
+# digFuQua
+Ein digitales Fußballquartett
