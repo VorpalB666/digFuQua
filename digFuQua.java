@@ -1,7 +1,24 @@
-import java.util.Arrays;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class digFuQua {
+
+    static Spieler auswahlErstellung() {
+        System.out.println("Möchtest du deinen Spieler manuell (m) oder zufällig (z) erstellen?");
+        Scanner scanner = new Scanner(System.in);
+        String auswahl = scanner.nextLine();
+        if (auswahl.equals("m")) {
+            return erstelleSpieler();
+        } else if (auswahl.equals("z")) {
+            return zufälligerSpieler();
+        } else {
+            return auswahlErstellung();
+        }
+    }
     static class Spieler {
         String Vorname;
         String Nachname;
@@ -25,8 +42,6 @@ public class digFuQua {
     }
 
     static Spieler erstelleSpieler() {
-        System.out.println("Spieler manuell (m) oder zufällig (z) erstellen?");
-
         String Vorname = stringFrage("Wie soll dein Spieler mit Vornamen heißen? ");
         String Nachname = stringFrage("Wie soll dein Spieler mit Nachnnamen heißen? ");
 
@@ -50,14 +65,40 @@ public class digFuQua {
         );
     }
 
+
+    static Spieler zufälligerSpieler() {
+        String Vorname = zufallsName(ladeListe("Vornamen.txt"));
+        String Nachname = zufallsName(ladeListe("Nachnamen.txt"));
+
+        Random random = new Random();
+        float Größe = (float) (Math.round(Math.random() * 121 + 120) ) / 100f;
+
+        int Passen = (int) (Math.random()*100);
+        int Schießen = (int) (Math.random()*100);
+        int Schnelligkeit = (int) (Math.random()*100);
+        int Zweikampf = (int) (Math.random()*100);
+        int Kondition = (int) (Math.random()*100);
+
+        return new Spieler(
+            Vorname,
+            Nachname,
+            Größe,
+            Passen,
+            Schießen,
+            Schnelligkeit,
+            Zweikampf,
+            Kondition
+        );
+    }
+
     
-    static void erstelleSpielerkarte (Spieler spielerAttribute) {
+    static void erstelleSpielerkarte (Spieler spielerEins, Spieler spielerZwei) {
         System.out.println("-".repeat(47));
-        System.out.println("|" + center((spielerAttribute.Vorname + " " + spielerAttribute.Nachname), 46) + "|");
+        System.out.println("|" + center((spielerEins.Vorname + " " + spielerEins.Nachname), 46) + "|");
         System.out.println("-".repeat(46));        
-        System.out.printf("| Größe:\t %4s | Schnelligkeit:\t %4s |\n", spielerAttribute.Größe, spielerAttribute.Schnelligkeit);
-        System.out.printf("| Passen:\t %4s | Schießen:\t %4s |\n", spielerAttribute.Passen, spielerAttribute.Schießen);
-        System.out.printf("| Zweikampf:\t %4s | Kondition:\t %4s |\n", spielerAttribute.Zweikampf, spielerAttribute.Kondition);
+        System.out.printf("| Größe:\t %4s | Schnelligkeit:\t %4s |\n", spielerEins.Größe, spielerEins.Schnelligkeit);
+        System.out.printf("| Passen:\t %4s | Schießen:\t %4s |\n", spielerEins.Passen, spielerEins.Schießen);
+        System.out.printf("| Zweikampf:\t %4s | Kondition:\t %4s |\n", spielerEins.Zweikampf, spielerEins.Kondition);
         System.out.println("-".repeat(47));
 
         System.out.println();
@@ -68,6 +109,13 @@ public class digFuQua {
         System.out.println(center("   \\/     ___|", 47));
         System.out.println();
 
+        System.out.println("-".repeat(47));
+        System.out.println("|" + center((spielerZwei.Vorname + " " + spielerZwei.Nachname), 46) + "|");
+        System.out.println("-".repeat(46));        
+        System.out.printf("| Größe:\t %4s | Schnelligkeit:\t %4s |\n", spielerZwei.Größe, spielerZwei.Schnelligkeit);
+        System.out.printf("| Passen:\t %4s | Schießen:\t %4s |\n", spielerZwei.Passen, spielerZwei.Schießen);
+        System.out.printf("| Zweikampf:\t %4s | Kondition:\t %4s |\n", spielerZwei.Zweikampf, spielerZwei.Kondition);
+        System.out.println("-".repeat(47));
     }
 
 
@@ -84,6 +132,27 @@ public class digFuQua {
             }
             return text;
         }
+    }
+
+
+    static List<String> ladeListe(String dateiName) {
+        try {
+            return Files.readAllLines(Path.of("C:\\Users\\Stefa\\Nextcloud\\IT\\Java\\src\\digFuQua\\Files\\", dateiName))
+                        .stream()
+                        .map(String::trim)
+                        .filter(zeile -> !zeile.isEmpty())
+                        .toList();
+        } catch (IOException e) {
+            System.out.println("Konnte Datei nicht lesen: " + dateiName + " (" + e.getMessage() + ")");
+            return List.of();  // leere Liste zurückgeben, damit das Spiel weiterlaufen kann
+        }
+    }
+
+    static java.util.Random rng = new java.util.Random();
+
+    static String zufallsName(List<String> namen) {
+        int zufallsZahl = rng.nextInt(namen.size());  
+        return namen.get(zufallsZahl);                
     }
 
     static int intFrage (String frage) {
@@ -136,7 +205,7 @@ public class digFuQua {
 
             String eingabe = scanner.nextLine().trim();
 
-            if (!eingabe.isEmpty() && eingabe.matches("[A-Za-zÄOÜäouß-]+")) {
+            if (!eingabe.isEmpty() && eingabe.matches("[A-Za-zÄOÜäöüß-]+")) {
                 return eingabe;
             }
             System.out.println("Ungültige Eingabe - bitte nur Buchstaben und Bindestrich verwenden.");
@@ -148,8 +217,10 @@ public class digFuQua {
     public static void main(String[] args) {
         System.out.println("Herzlich willkommen zum digitalen Fußballquartett");
         System.out.println("-".repeat(49));
-        Spieler meinSpieler = erstelleSpieler();
-        erstelleSpielerkarte(meinSpieler);
+       
+        Spieler spielerEins = auswahlErstellung();
+        Spieler spielerZwei = auswahlErstellung();
+        erstelleSpielerkarte(spielerEins, spielerZwei);
     }        
 }
 
@@ -164,4 +235,10 @@ ToDo
 - Verteilung der Karten
 - Speicherung der Karten auf der Hand
 */
+
+/*
+ cd C:\Users\Stefa\Nextcloud\IT\Java\src\digFuQua
+>> javac -encoding UTF-8 digFuQua.java
+>> java digFuQua
+ */
 
