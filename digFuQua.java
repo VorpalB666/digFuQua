@@ -442,17 +442,4 @@ public class digFuQua {
     }        
 }
 
-/*
-ToDo
-- Zugzuteilung (Player 1, Player 2)
-- Namenseingabe der Spieler
-- Verteilung der Karten
-- Speicherung der Karten auf der Hand - flexibler String
-*/
-
-/*
- cd C:\Users\Stefa\Nextcloud\IT\Java\src\digFuQua
->> javac -encoding UTF-8 digFuQua.java
->> java digFuQua
- */
 
